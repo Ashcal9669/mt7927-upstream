@@ -2216,18 +2216,6 @@ int mt7927_mcu_config_sniffer(struct mt792x_vif *vif,
 		[NL80211_BAND_5GHZ] = 2,
 		[NL80211_BAND_6GHZ] = 3,
 	};
-	static const u8 ch_width[] = {
-		[NL80211_CHAN_WIDTH_20_NOHT] = 0,
-		[NL80211_CHAN_WIDTH_20] = 0,
-		[NL80211_CHAN_WIDTH_40] = 0,
-		[NL80211_CHAN_WIDTH_80] = 1,
-		[NL80211_CHAN_WIDTH_160] = 2,
-		[NL80211_CHAN_WIDTH_80P80] = 3,
-		[NL80211_CHAN_WIDTH_5] = 4,
-		[NL80211_CHAN_WIDTH_10] = 5,
-		[NL80211_CHAN_WIDTH_320] = 6,
-	};
-
 	struct {
 		struct {
 			u8 band_idx;
@@ -2260,8 +2248,8 @@ int mt7927_mcu_config_sniffer(struct mt792x_vif *vif,
 
 	if (chandef->chan->band < ARRAY_SIZE(ch_band))
 		req.tlv.ch_band = ch_band[chandef->chan->band];
-	if (chandef->width < ARRAY_SIZE(ch_width))
-		req.tlv.bw = ch_width[chandef->width];
+
+	req.tlv.bw = mt76_connac_chan_bw(chandef);
 
 	if (freq2)
 		req.tlv.center_ch2 = ieee80211_frequency_to_channel(freq2);
