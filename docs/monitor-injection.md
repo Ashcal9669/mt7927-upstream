@@ -56,21 +56,31 @@ sudo iw dev mon0 set channel 6 HT20
 5 GHz:
 
 ```sh
-sudo iw dev mon0 set channel 36 HE80
+sudo iw dev mon0 set channel 36 HT40+
+sudo iw dev mon0 set freq 5745 80MHz
 ```
 
 6 GHz EHT, 320 MHz where allowed:
 
 ```sh
-sudo iw dev mon0 set channel 37 320MHz
+sudo iw dev mon0 set freq 6135 80MHz
+sudo iw dev mon0 set freq 6135 160MHz
+sudo iw dev mon0 set freq 6135 320MHz
 ```
 
-If the 6 GHz command fails, verify regulatory state and kernel/mac80211 support:
+For this `iw` build, `set freq ... 320MHz` is accepted for 6 GHz monitor
+operation while `set channel 37 320MHz` can be rejected as an invalid tuple.
+
+If a 6 GHz command fails, verify regulatory state and kernel/mac80211 support:
 
 ```sh
 iw reg get
 iw phy | grep -A40 -i 'band 4'
 ```
+
+In the US regulatory domain, 6 GHz can be reported with `NO-OUTDOOR` and
+`PASSIVE-SCAN`/no-IR restrictions. That limits active probe behavior even when
+monitor mode and 320 MHz channel configuration are supported.
 
 ## 4. Passive Capture Sanity
 
