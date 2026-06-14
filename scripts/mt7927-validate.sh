@@ -1,6 +1,8 @@
 #!/bin/sh
 set -eu
 
+IW=${IW:-$(command -v iw 2>/dev/null || command -v /usr/sbin/iw 2>/dev/null || true)}
+
 echo "== kernel =="
 uname -a
 
@@ -30,11 +32,19 @@ done
 
 echo
 echo "== iw dev =="
-iw dev || true
+if [ -n "$IW" ]; then
+	"$IW" dev || true
+else
+	echo "iw not found"
+fi
 
 echo
 echo "== iw phy mt7927-related capabilities =="
-iw phy 2>/dev/null | grep -iE 'Wiphy|Band |MHz|EHT|monitor|AP|managed' | sed -n '1,180p' || true
+if [ -n "$IW" ]; then
+	"$IW" phy 2>/dev/null | grep -iE 'Wiphy|Band |MHz|EHT|monitor|AP|managed' | sed -n '1,180p' || true
+else
+	echo "iw not found"
+fi
 
 echo
 echo "== recent dmesg =="
